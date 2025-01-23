@@ -1,18 +1,27 @@
-//Startovní čára
-radio.setGroup(73)
-Sensors.SetLightLevel()
-let start: boolean = false
+let ongoing = false
+let time = 0
 
-Sensors.OnLightDrop(function(){
-    //1 = start, 0 = zrušeno, 2 = konec
-    input.onButtonPressed(Button.A){
-
+basic.forever(function () {
+    if (ongoing) {
+        basic.pause(1000)
+        time++
+        whaleysans.showNumber(time)
     }
-    if (!start)
-    radio.sendValue("start", 1)
-    start = true
 })
 
-radio.onReceivedValue(function("konec", 2){
-    whaleysans.showNumber(radio.receivedPacket)
+input.onButtonPressed(Button.B, function () {
+    if (ongoing) {
+        ongoing = false
+        whaleysans.showNumber(time)
+        basic.clearScreen()
+        basic.pause(500)
+        basic.showString("seconds")
+    }
+})
+
+input.onButtonPressed(Button.A, function () {
+    if (!ongoing) {
+        ongoing = true
+        time = 0
+    }
 })
