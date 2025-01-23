@@ -1,18 +1,18 @@
-let ongoing = false
-let time = 0
+let bomboklada = false
+let casomira = 0
 
 basic.forever(function () {
-    if (ongoing) {
-        basic.pause(1000)
-        time++
-        whaleysans.showNumber(time)
+    if (bomboklada) {
+        basic.pause(100)
+        casomira+=1
+        whaleysans.showNumber(casomira)
     }
 })
 
 input.onButtonPressed(Button.B, function () {
-    if (ongoing) {
-        ongoing = false
-        whaleysans.showNumber(time)
+    if (bomboklada) {
+        bomboklada = false
+        whaleysans.showNumber(casomira)
         basic.clearScreen()
         basic.pause(500)
         basic.showString("seconds")
@@ -20,8 +20,8 @@ input.onButtonPressed(Button.B, function () {
 })
 
 input.onButtonPressed(Button.A, function () {
-    if (!ongoing) {
-        ongoing = true
-        time = 0
+    if (!bomboklada) {
+        bomboklada = true
+        casomira = 0
     }
 })
