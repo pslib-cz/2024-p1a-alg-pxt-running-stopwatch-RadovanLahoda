@@ -1,27 +1,32 @@
-let bomboklada = false
-let casomira = 0
+//Startovní čára
+Sensors.SetLightLevel()
+radio.setGroup(73)
+enum State { READY, RUNNING, FINISH }
+let akce: State = State.READY
+let stopwatch: number = 0
 
-basic.forever(function () {
-    if (bomboklada) {
-        basic.pause(100)
-        casomira+=1
-        whaleysans.showNumber(casomira)
+radio.onReceivedNumber(function (receivedNumber: number) {
+
+    if (akce === State.FINISH) {
+        akce = State.READY
+    }
+
+    if (akce === State.READY) {
+        stopwatch = input.runningTime()
+        basic.showNumber(receivedNumber)
+        akce = State.RUNNING
+    }
+
+})
+
+Sensors.OnLightDrop(function () {
+    if (akce === State.RUNNING) {
+        let finalTime: number
+        finalTime = (input.runningTime() - stopwatch) / 1000
+        //whaleysans.showNumber(input.runningTime())
+        radio.sendValue("endTime", finalTime)
+        basic.showNumber(2)
+        akce = State.FINISH
     }
 })
 
-input.onButtonPressed(Button.B, function () {
-    if (bomboklada) {
-        bomboklada = false
-        whaleysans.showNumber(casomira)
-        basic.clearScreen()
-        basic.pause(500)
-        basic.showString("seconds")
-    }
-})
-
-input.onButtonPressed(Button.A, function () {
-    if (!bomboklada) {
-        bomboklada = true
-        casomira = 0
-    }
-})
