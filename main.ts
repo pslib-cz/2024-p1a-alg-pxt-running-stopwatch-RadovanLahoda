@@ -1,32 +1,51 @@
 //Startovní čára
-Sensors.SetLightLevel()
 radio.setGroup(73)
 enum State { READY, RUNNING, FINISH }
-let akce: State = State.READY
-let stopwatch: number = 0
+let akce: State;
+let stopwatch: number;
+let finalTime: number;
+const reset = () => {
+    akce = State.READY
+    stopwatch = 0
+    finalTime = 0
+    Sensors.SetLightLevel()
+}
+reset()
 
 radio.onReceivedNumber(function (receivedNumber: number) {
 
-    if (akce === State.FINISH) {
-        akce = State.READY
+    if (akce === State.FINISH && receivedNumber === 0) {
+        reset();
     }
-
-    if (akce === State.READY) {
+    // music.playTone(400,300)
+    if (akce === State.READY && receivedNumber === 1) {
         stopwatch = input.runningTime()
         basic.showNumber(receivedNumber)
         akce = State.RUNNING
     }
 
+    if (receivedNumber === 2) {
+        reset();
+    }
+})
+input.onButtonPressed(Button.A, function() {
+    if (akce === State.FINISH) {
+        basic.showNumber(finalTime)
+    }
+})
+
+input.onButtonPressed(Button.B, function() {
+   radio.sendNumber(0)
+   reset()
 })
 
 Sensors.OnLightDrop(function () {
     if (akce === State.RUNNING) {
-        let finalTime: number
         finalTime = (input.runningTime() - stopwatch) / 1000
-        //whaleysans.showNumber(input.runningTime())
         radio.sendValue("endTime", finalTime)
-        basic.showNumber(2)
+        basic.showNumber(finalTime)
+
+        // Store the final time for later use
         akce = State.FINISH
     }
 })
-
